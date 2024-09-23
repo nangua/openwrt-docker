@@ -19,6 +19,7 @@ ARG MIRROR
 ENV VERSION_PATH=${VERSION_PATH:-snapshots}
 ENV DOWNLOAD_PATH=$VERSION_PATH/targets/$TARGET
 ENV FILE_HOST=${FILE_HOST:-downloads.openwrt.org}
+# parse for sed
 ENV MIRROR=${FILE_HOST//\//\/}
 
 RUN curl "https://$FILE_HOST/$DOWNLOAD_PATH/sha256sums" -fs -o sha256sums
