@@ -19,7 +19,7 @@ ARG MIRROR
 ENV VERSION_PATH=${VERSION_PATH:-snapshots}
 ENV DOWNLOAD_PATH=$VERSION_PATH/targets/$TARGET
 ENV FILE_HOST=${FILE_HOST:-downloads.openwrt.org}
-ENV MIRROR=${MIRROR:-downloads.openwrt.org}
+ENV MIRROR=${FILE_HOST//\//\/}
 
 RUN curl "https://$FILE_HOST/$DOWNLOAD_PATH/sha256sums" -fs -o sha256sums
 RUN curl "https://$FILE_HOST/$DOWNLOAD_PATH/sha256sums.asc" -fs -o sha256sums.asc || true
@@ -48,12 +48,12 @@ RUN rm -rf "$(cat ~/file_name)"
 
 RUN set -o errexit -o nounset \
   # select specific mirror
-  && sed -i "s/downloads.openwrt.org/$MIRROR\/openwrt/" repositories.conf \
+  && sed -i "s/downloads.openwrt.org/$MIRROR/" repositories.conf \
   && sed -i '3s/$/\nsrc\/gz dlkids https:\/\/op.dllkids.xyz\/packages\/x86_64\n/' repositories.conf \
   && sed -i '3s/$/\nsrc\/gz kiddin9 https:\/\/dl.openwrt.ai\/latest\/packages\/x86_64\/kiddin9/' repositories.conf \
   # ingore signature check
   && sed -i 's/^option check_signature/#option check_signature/' repositories.conf \
-  && sed -i "s/downloads.openwrt.org/$MIRROR\/openwrt/" .config \
+  && sed -i "s/downloads.openwrt.org/$MIRROR/" .config \
   && sed -i 's/CONFIG_TARGET_PREINIT_IP="192.168.1.1"/CONFIG_TARGET_PREINIT_IP="10.0.0.1"/' .config \
   && sed -i 's/CONFIG_TARGET_PREINIT_BROADCAST="192.168.1.255"/CONFIG_TARGET_PREINIT_BROADCAST="10.0.0.255"/' .config \
   # resize partition
